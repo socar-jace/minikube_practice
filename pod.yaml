@@ -1,0 +1,43 @@
+apiVersion: v1  # k8s api version
+kind: Pod # 생성할 object, controller의 종류
+metadata:
+  name: kotlin-pod  # object의 고유 이름, 복수 생성할 경우 prefix로 사용된다.
+  labels: # 외부에서 Pod를 찾을 때 사용할 label. 복수 label 입력 가능
+    app: kotlin-pod
+spec: # 기대되는 object 상태
+  containers: # Pod 내부에서 생성할 컨테이너 목록
+  - name: api # 컨테이너 이름
+    image: positipman/api:latest
+    ports:
+    - containerPort: 8080
+  - name: grpc
+    image: positipman/grpc:latest
+    ports:
+    - containerPort: 6565
+  - name: frontend
+    image: positipman/frontend:latest
+    ports:
+    - containerPort: 8000
+
+  restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kotlin-service
+spec:
+  type: NodePort  # 외부에 Pod를 어떤 형태로 노출할지 결정
+  ports:
+  - port: 80  # 외부에 노출할 포트
+    name: http
+    targetPort: 8000 # 컨테이너의 포트
+    protocol: TCP
+    nodePort: 30001
+  - port: 8080
+    name: api
+    targetPort: 8080
+    protocol: TCP
+    nodePort: 30002
+  selector:
+    app: kotlin-pod # pod 의 메타데이터 라벨 이름

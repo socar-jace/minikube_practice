@@ -1,0 +1,18 @@
+# ingress는 단지 ingress controller라는 특수한 서버 컨테이너에 적용되어야만 ingress에 적용된 규칙이 활성화된다.
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kotlin-ingress
+  annotations:
+#    kubernetes.io/ingress.class: nginx
+    ingress.kubernetes.io/rewrite-target: "/"
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: # 호스트명으로 접근하라는 네트워크 요청에 대해 ingress 규칙 적용
+    http:
+      paths:
+      - path: / # 이 경로로 접근하는 요청을 serviceName 이름의 서비스의 servicePort로 전달한다. (service clusterIP:servicePort)
+        backend: # serviceName 이름의 servicePort로 전달하라
+          serviceName: kotlin-service
+          servicePort: 80
