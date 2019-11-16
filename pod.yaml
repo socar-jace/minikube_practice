@@ -22,6 +22,7 @@ spec: # 기대되는 object 상태
   restartPolicy: Always
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
